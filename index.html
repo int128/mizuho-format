@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<title>みずほ入出金明細の変換</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/cosmo/bootstrap.min.css"/>
+</head>
+<body>
+
+<div class="container">
+<header class="page-header">
+<div class="pull-right"><img alt="" src="money_no_shadow.png" /></div>
+<h1>みずほ入出金明細の変換</h1>
+<p class="lead">
+みずほダイレクトの入出金明細をテーブルに変換します。<br/>
+変換されたテーブルはExcelやGoogle Docsに貼り付けて活用できます。
+</p>
+</header>
+
+<div class="row">
+<div class="col-md-6">
+<h3>貼り付け欄</h3>
+<p>Webブラウザで入出金明細表をコピーし、下に貼り付けてください。</p>
+<textarea id="meisai" class="form-control" rows="16">
+2015.01.26	8,930 円	-	電気
+2015.01.27	8,931 円	-	ワロスカ－ド
+2015.02.03	-	8,932 円	ＡＴＭ
+</textarea>
+<span class="help-block">※サンプルが入っています。</span>
+</div>
+
+<div class="col-md-6">
+<h3>入出金明細テーブル</h3>
+<p>下のテーブルをコピーしてExcelやGoogle Docsに貼り付けられます。</p>
+<table id="result" class="table table-bordered table-striped">
+<thead>
+<tr><th>日付</th><th>引出</th><th>預入</th><th>内容</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+
+<div class="alert alert-warning">
+<strong>注意</strong>
+<p>
+    本ツールは非公式なものです。みずほ銀行に問い合わせたりしないでください。<br/>
+    貼り付けたデータが外部に送信されることはありません。Webブラウザ内のスクリプトで処理されます。
+</p>
+</div>
+
+<footer>
+<div>&copy; hidetake.org, 2011-2014.</div>
+</footer>
+</div>
+<script src="//code.jquery.com/jquery-3.1.0.min.js"></script>
+<script>
+$(function () {
+	$('#meisai').change(function () {
+		$('#result>tbody').empty();
+    $('#result>tbody').append(
+      $(this).val().split(/[\r\n]+/).map(function (line) {
+        return line.split(/\t/);
+      }).filter(function (blocks) {
+        return blocks.length == 4;
+      }).map(function (blocks) {
+        return blocks.map(function (block, i) {
+          return ([
+            (function (block) {return block.replace(/\./g, '-');}),
+            (function (block) {return block.replace(/[円, -]/g, '').replace(/(.+)/, '-$1');}),
+            (function (block) {return block.replace(/[円, -]/g, '');}),
+            (function (block) {return block;})
+          ])[i](block);
+        });
+      }).map(function (blocks) {
+        return blocks.map(function (block) {
+          return $('<td/>').text(block)
+        });
+      }).map(function (blocks) {
+        return $('<tr/>').append(blocks);
+      })
+    );
+	}).change();
+});
+</script>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-3232369-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+</body>
+</html>
